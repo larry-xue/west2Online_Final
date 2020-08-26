@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import ElementUI from 'element-ui';
 import axios from 'axios';
-import vuescroll from 'vue-scroll';
+import vuescroll from 'vuescroll';
 import './theme/index.css';
 import App from './App.vue';
 import router from './router';
@@ -13,13 +13,13 @@ Vue.use(ElementUI);
 Vue.prototype.$storage = Storage;
 
 Vue.prototype.$http = axios;
-axios.defaults.baseURL = 'http://39.97.113.252:8080/api/v1';
+axios.defaults.baseURL = 'http://39.97.113.252:8080/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.get['Content-Type'] = 'form-data';
 axios.defaults.headers.common['Content-Type'] = 'multipart/form-data';
 axios.defaults.withCredentials = false;
 
-// 请求拦截器
+// 请求拦截器;
 axios.interceptors.request.use((config) => {
   let token = Storage.localGet('token');
   const axiosConfig = config;
@@ -34,12 +34,6 @@ axios.interceptors.request.use((config) => {
 }, (err) => {
   console.log(err);
 });
-
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount('#app');
 
 Vue.use(vuescroll, {
   ops: {
@@ -78,3 +72,9 @@ Vue.use(vuescroll, {
   }, // 在这里设置全局默认配置
   name: 'vue-scroll', // 在这里自定义组件名字，默认是vueScroll
 });
+
+new Vue({
+  router,
+  store,
+  render: (h) => h(App),
+}).$mount('#app');

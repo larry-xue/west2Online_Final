@@ -1,53 +1,88 @@
 <template>
-    <div class="register-wrapper">
-        <div class="left-container">
-            <div class="left-pics">
-              <img src="../../assets/register_bgc.jpg" alt="seaFlow">
-            </div>
-            <div class="left-hover">
-              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="none"
-                width="100%" height="100%" version="1.1" class="injected-svg" data-src="assets/img/dividers/divider-vertical-1.svg">
-               <path
-                d="M0,0 L100,0 L100,100 L0,100 C66.6666667,83.3333333 100,66.6666667 100,50 C100,33.3333333 66.6666667,16.6666667 0,0 Z" stroke-Width="0"
-                fill="#ffffff"></path>
-              </svg>
-            </div>
+  <div class="register-wrapper">
+    <div class="left-container">
+      <div class="left-pics">
+        <img src="../../assets/register_bgc.jpg" alt="seaFlow" />
+      </div>
+      <div class="left-hover">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          width="100%"
+          height="100%"
+          version="1.1"
+          class="injected-svg"
+          data-src="assets/img/dividers/divider-vertical-1.svg"
+        >
+          <path
+            d="M0,0 L100,0 L100,100 L0,100 C66.6666667,83.3333333 100,66.6666667 100,50 C100,33.3333333 66.6666667,16.6666667 0,0 Z"
+            stroke-width="0"
+            fill="#ffffff"
+          />
+        </svg>
+      </div>
+    </div>
+    <div class="right-container">
+      <div class="register">
+        <div class="text-content">
+          <h1 style="padding: 15px; font-size: 2.5rem">Create Acount</h1>
+          <span>To make friends...To play together</span>
         </div>
-        <div class="right-container">
-          <div class="register">
-            <div class="text-content">
-              <h1 style="padding: 15px; font-size: 2.5rem">Create Acount</h1>
-              <span>To make friends...To play together</span>
-            </div>
-            <div class="register-form">
-              <el-form :model="register" size="medium" :rules="rules" ref="register">
-                <el-form-item prop="email">
-                  <el-input v-model="register.email" placeholder="Email Adress"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                  <el-input v-model="register.password" type="password" placeholder="Password" show-password></el-input>
-                </el-form-item>
-                <el-form-item  prop="rePassword">
-                  <el-input v-model="register.rePassword" type="password" placeholder="Confirm Password" show-password></el-input>
-                </el-form-item>
-                <el-form-item prop="captcha">
-                  <el-input style="width: 13rem; float: left" placeholder="captcha" v-model="register.captcha"></el-input>
-                  <el-button v-show="showCaptchaTimeLimit" disabled style="width: 8rem; float: right;" type="warning">{{timeLimit}}秒</el-button>
-                  <el-button v-show="!showCaptchaTimeLimit" style="width: 8rem; float: right;" type="primary" @click="getCaptcha">发送验证码</el-button>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="registerNow('register')">Sign up</el-button>
-                </el-form-item>
-              </el-form>
-              <el-divider></el-divider>
-              <div class="login">
-                <span>Already have an account yet? </span>
-                 <el-link type="primary" @click="go2Login" :underline="false">Sign in</el-link>
-              </div>
-            </div>
+        <div class="register-form">
+          <el-form :model="register" size="medium" :rules="rules" ref="register">
+            <el-form-item prop="email">
+              <el-input v-model="register.email" placeholder="Email Adress"></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                v-model="register.password"
+                type="password"
+                placeholder="Password"
+                show-password
+              ></el-input>
+            </el-form-item>
+            <el-form-item prop="rePassword">
+              <el-input
+                v-model="register.rePassword"
+                type="password"
+                placeholder="Confirm Password"
+                show-password
+              ></el-input>
+            </el-form-item>
+            <el-form-item prop="captcha">
+              <el-input
+                style="width: 13rem; float: left"
+                placeholder="captcha"
+                v-model="register.captcha"
+              ></el-input>
+              <el-button
+                v-show="showCaptchaTimeLimit"
+                disabled
+                style="width: 8rem; float: right;"
+                type="warning"
+              >{{timeLimit}}秒</el-button>
+              <el-button
+                v-show="!showCaptchaTimeLimit"
+                style="width: 8rem; float: right;"
+                type="primary"
+                @click="getCaptcha"
+              >发送验证码</el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="registerNow('register')">Sign up</el-button>
+            </el-form-item>
+          </el-form>
+          <el-divider></el-divider>
+          <div class="login">
+            <span>Already have an account yet?</span>
+            <el-link type="primary" @click="go2Login" :underline="false">Sign in</el-link>
           </div>
         </div>
+      </div>
     </div>
+  </div>
 </template>>
 
 <script>
@@ -133,7 +168,7 @@ export default {
     registerNow(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$http.post('/user', {
+          this.$http.post('/v1/user', {
             email: this.register.email,
             password: md5(this.register.password),
             captcha: this.register.captcha,
@@ -157,7 +192,7 @@ export default {
       // 先判断是否有邮箱
       const rightFormat = new RegExp(/^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/);
       if (rightFormat.test(this.register.email)) {
-        this.$http.post('/email', {
+        this.$http.post('/v1/email', {
           email: this.register.email,
           subject: 0,
         }).then(() => {
@@ -190,67 +225,67 @@ export default {
 </script>
 
 <style scoped>
-  .register-wrapper {
-    height: 100vh;
-    background-color: #fff;
-    display: flex;
-  }
+.register-wrapper {
+  height: 100vh;
+  background-color: #fff;
+  display: flex;
+}
 
-  .left-container {
-    width: 35%;
-    position: relative;
-    overflow: hidden;
-  }
+.left-container {
+  width: 35%;
+  position: relative;
+  overflow: hidden;
+}
 
-  .left-pics {
-    position: absolute;
-    height: 100%;
-  }
+.left-pics {
+  position: absolute;
+  height: 100%;
+}
 
-  .left-pics img {
-    width: 100vw;
-  }
+.left-pics img {
+  width: 100vw;
+}
 
-  .left-hover {
-    position: absolute;
-    right: 0;
-    width: 20%;
-    height: 100%;
-    z-index: 23;
-  }
+.left-hover {
+  position: absolute;
+  right: 0;
+  width: 20%;
+  height: 100%;
+  z-index: 23;
+}
 
-  .right-container {
-    width: 65%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1.5;
-  }
+.right-container {
+  width: 65%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+}
 
-  .register {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.register {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .register-form {
-    width: 50%;
-    max-width: 400px;
-    padding: 2.5rem;
-  }
+.register-form {
+  width: 50%;
+  max-width: 400px;
+  padding: 2.5rem;
+}
 
-  .el-input {
-    width: 25rem;
-    font-size: 1rem;
-  }
+.el-input {
+  width: 25rem;
+  font-size: 1rem;
+}
 
-  .el-button {
-    width: 25rem;
-  }
+.el-button {
+  width: 25rem;
+}
 
-  .el-tooltip {
-    background-color: rgb(230,162,60);
-    color: white;
-  }
+.el-tooltip {
+  background-color: rgb(230, 162, 60);
+  color: white;
+}
 </style>

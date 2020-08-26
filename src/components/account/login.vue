@@ -81,7 +81,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         console.log(valid);
         if (valid) {
-          this.$http.post('/auth', {
+          this.$http.post('/v1/auth', {
             email: this.login.email,
             password: md5(this.login.password),
           }).then((res) => {

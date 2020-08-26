@@ -17,7 +17,7 @@ export default {
     navBar,
   },
   mounted() {
-    this.$http.get('/user').then((res) => {
+    this.$http.get('/v1/user').then((res) => {
       this.$store.commit('updateUserInfo', res.data.data);
     });
   },

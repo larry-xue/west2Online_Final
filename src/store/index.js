@@ -14,10 +14,20 @@ export default new Vuex.Store({
       lock: false,
       email: '1612395322@qq.com',
     },
+    friendTrend: [],
+    hotTrend: [],
+    likeTrend: [],
   },
   mutations: {
     updateUserInfo(state, payload) {
       state.userInfo = payload;
+    },
+    addLikeTrend(state, payload) {
+      if (payload instanceof Array) {
+        state.likeTrend.push(...payload);
+      } else {
+        state.likeTrend.unshift(payload);
+      }
     },
   },
   actions: {

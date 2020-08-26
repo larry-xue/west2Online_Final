@@ -47,6 +47,10 @@ export default {
   background-color: rgb(244, 245, 245);
 }
 
+body {
+  background-color: rgb(244, 245, 245);
+}
+
 .cursor {
   cursor: pointer;
 }

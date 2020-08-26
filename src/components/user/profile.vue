@@ -177,8 +177,10 @@ export default {
       if (this[type] !== this.userInfo[type]) {
         const param = {};
         param[type] = Number(this[type]);
+        console.log(this[type]);
+        console.log(type);
         console.log(param);
-        this.$http.put('/user', param).then((res) => {
+        this.$http.put('/v1/user', param).then((res) => {
           console.log(res.data.data);
           this.$store.commit('updateUserInfo', res.data.data);
           this.$notify({

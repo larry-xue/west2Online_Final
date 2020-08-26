@@ -5,7 +5,7 @@
     </div>
     <div class="recover-wrapper">
       <div class="recover-text">
-        <h1  style="font-size: 2.5rem">Forget Password</h1>
+        <h1 style="font-size: 2.5rem">Forget Password</h1>
       </div>
       <div class="revover-steps">
         <el-steps :active="nowStep" finish-status="success">
@@ -50,7 +50,7 @@ export default {
       // 发送重置密码的验证码
       const rightFormat = new RegExp(/^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/);
       if (rightFormat.test(this.email)) {
-        this.$http.post('/email', {
+        this.$http.post('/v1/email', {
           email: this.email,
           subject: 1,
         }).then(() => {
@@ -69,42 +69,42 @@ export default {
 </script>
 
 <style scoped>
-  .recover {
-    width: 100%;
-    margin: 0 auto;
-    max-width: 960px;
-    padding: 3rem 0;
-  }
+.recover {
+  width: 100%;
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 3rem 0;
+}
 
-  .logo {
-    width: 100%;
-  }
+.logo {
+  width: 100%;
+}
 
-  .recover-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+.recover-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 
-    padding-top: 5rem;
-  }
+  padding-top: 5rem;
+}
 
-  .revover-steps {
-    width: 100%;
-    padding-top: 2rem;
-  }
+.revover-steps {
+  width: 100%;
+  padding-top: 2rem;
+}
 
-  .el-input {
-    width: 350px;
-    font-size: 1rem;
-  }
+.el-input {
+  width: 350px;
+  font-size: 1rem;
+}
 
-  .step-show {
-    padding-top: 1rem;
-  }
+.step-show {
+  padding-top: 1rem;
+}
 
-  .el-button {
-    width: 350px;
-    margin-top: 2rem;
-  }
+.el-button {
+  width: 350px;
+  margin-top: 2rem;
+}
 </style>

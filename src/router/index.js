@@ -25,21 +25,15 @@ const routes = [
         name: 'social',
         component: () => import('../views/Social.vue'),
         children: [
-          {
-            path: '/social/likeTrend',
-            name: 'likeTrend',
-            component: () => import('../components/social/likeTrend.vue'),
-          },
-          {
-            path: '/social/hotTrend',
-            name: 'hotTrend',
-            component: () => import('../components/social/hotTrend.vue'),
-          },
-          {
-            path: '/social/friendTrend',
-            name: 'friendTrend',
-            component: () => import('../components/social/friendTrend.vue'),
-          },
+
+        ],
+      },
+      {
+        path: '/friends',
+        name: 'friends',
+        component: () => import('../views/Friends.vue'),
+        children: [
+
         ],
       },
       {
