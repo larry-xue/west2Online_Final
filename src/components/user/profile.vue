@@ -9,7 +9,7 @@
         <div class="profile-common profile-avatar">
           <div class="left-desc">头像</div>
           <div class="right-content" style="justify-content: unset">
-            <el-avatar shape="square" size="large"></el-avatar>
+            <el-avatar shape="square" :src="picSrc" size="large"></el-avatar>
             <div class="upload-avatar">
               <div class="upload-desc el-upload__tip">支持 jpg、png 格式大小 5M 以内的图片</div>
               <div class="upload-btn">
@@ -131,11 +131,40 @@ export default {
         username: false,
         introduction: false,
       },
+      picSrc: '',
     };
   },
   methods: {
-    uploadAvatar() {
-      // this.$http.
+    // http://39.97.113.252:8080/static/
+    uploadAvatar(e) {
+      const file = e.target.files[0];
+      // 上传图片
+      const param = new FormData(); // 创建form对象
+      param.append('images', file); // 通过append向form对象添加数据
+      this.$http.post('v1/files', param).then((res) => {
+        console.log(this.picSrc);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        const that = this;
+        // eslint-disable-next-line func-names
+        reader.onload = function () {
+          const url = this.result.substring(this.result.indexOf(',') + 1);
+          that.picSrc = `data:image/png;base64,${url}`;
+          // that.$refs['imgimg'].setAttribute('src','data:image/png;base64,'+url);
+        };
+        // 保存信息
+        this.$http.put('/v1/user', {
+          avatar: res.data.data.files[0].path,
+        }).then((res2) => {
+          console.log(res2.data.data);
+          this.$store.commit('updateUserInfo', res2.data.data);
+          this.$notify({
+            message: '头像已更新',
+            duration: 1000,
+            showClose: false,
+          });
+        });
+      });
     },
     openFolder(type) {
       this.$refs.filElem.dispatchEvent(new MouseEvent('click'));
@@ -174,11 +203,16 @@ export default {
     },
     saveChange(type) {
       // 修改用户的姓名，性别，介绍，头像，背景
+      const param = {};
+      if (type === 'username') {
+        param.username = this.username;
+      } else if (type === 'sex') {
+        param.sex = Number(this.sex);
+      } else if (type === 'introduction') {
+        param.introduction = this.introduction;
+      }
       if (this[type] !== this.userInfo[type]) {
-        const param = {};
-        param[type] = Number(this[type]);
         console.log(this[type]);
-        console.log(type);
         console.log(param);
         this.$http.put('/v1/user', param).then((res) => {
           console.log(res.data.data);

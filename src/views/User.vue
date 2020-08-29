@@ -3,7 +3,7 @@
     <div class="user-show">
       <el-card>
         <div class="user-show-avatar">
-          <el-avatar :src="userInfo.avatar"></el-avatar>
+          <el-avatar :src="picUrl"></el-avatar>
         </div>
         <div class="user-show-info">
           <div class="info-name">
@@ -35,6 +35,7 @@
         </el-tabs>
       </div>
     </div>
+    <el-backtop></el-backtop>
   </div>
 </template>>
 
@@ -51,6 +52,9 @@ export default {
     ...mapState({
       userInfo: (state) => state.userInfo,
     }),
+    picUrl() {
+      return `http://39.97.113.252:8080/static/${this.userInfo.avatar}`;
+    },
   },
   methods: {
     changeActiveTab(tab) {

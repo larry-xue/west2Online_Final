@@ -20,7 +20,7 @@
           </el-popover>
         </div>
 
-        <div class="options-item" @click="uploadImg">
+        <div class="options-item" @click="selectImg">
           <i class="el-icon-picture"></i>
           <span>&nbsp;图片</span>
         </div>
@@ -29,7 +29,7 @@
         <el-button type="primary" size="mini" @click="releaseNews()">发布</el-button>
       </div>
     </div>
-    <input type="file" style="display: none" id="img" />
+    <input type="file" style="display: none" @change="uploadImg" id="img" />
   </div>
 </template>
 
@@ -45,18 +45,38 @@ export default {
     'inputType',
   ],
   methods: {
+    uploadImg(e) {
+      const file = e.target.files[0];
+      // 上传图片
+      const param = new FormData(); // 创建form对象
+      param.append('images', file); // 通过append向form对象添加数据
+      this.$http.post('v1/files', param).then((res) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        const that = this;
+        // eslint-disable-next-line func-names
+        reader.onload = function () {
+          const url = this.result.substring(this.result.indexOf(',') + 1);
+          that.imgs.push(`data:image/png;base64,${url}`);
+          // that.$refs['imgimg'].setAttribute('src','data:image/png;base64,'+url);
+        };
+        // 保存信息
+        this.uploadImgs.push(res.data.data.files[0].fid);
+        console.log(this.uploadImgs);
+      });
+    },
     addEmojiContent(item) {
       document.getElementsByClassName('input-editor')[0].innerHTML += item;
     },
-    uploadImg() {
+    selectImg() {
       // 上传图片到服务器，返回url
       const img = document.getElementById('img');
-      console.log(img);
       img.click();
     },
     delThisImg(index) {
       // 删除上传的指定图片
       this.imgs.splice(index, 1);
+      this.uploadImgs.splice(index, 1);
     },
     onOptions() {
       this.doNotMiss = true;
@@ -64,14 +84,14 @@ export default {
     releaseNews() {
       // 发布动态
       const content = document.getElementsByClassName('input-editor')[0].innerHTML;
-      if (content === '') {
+      if (content === '' && this.uploadImgs.length === 0) {
         this.$notify({
           message: '发布内容不能为空！',
         });
       } else {
         this.$http.post('/v1/news', {
           content,
-          imgs: this.imgs,
+          imgs: this.uploadImgs,
         }).then((res) => {
           console.log(res.data.data);
           this.$notify({
@@ -99,16 +119,8 @@ export default {
   data() {
     return {
       sendClasses: ['input-content'],
-      imgs: [
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-      ],
+      imgs: [],
+      uploadImgs: [],
     };
   },
   computed: {

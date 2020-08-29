@@ -1,11 +1,11 @@
 <template>
-  <div class="friendList-wrapper">
-    <div class="friendList-body">
-      <h2>好友列表</h2>
+  <div class="requestList-wrapper">
+    <div class="requestList-body">
+      <h2>好友申请</h2>
       <vue-scroll slot="refresh-start" ref="body">
         <ul>
           <li v-for="item in itemInfo" :key="item.key" class="cursor">
-            <div class="friend-info">
+            <div class="request-info">
               <div class="info-avatar">
                 <el-avatar :src="item.avatar"></el-avatar>
               </div>
@@ -16,7 +16,7 @@
             </div>
             <div class="options">
               <div class="option-item">
-                <i class="el-icon-chat-line-round"></i>
+                <i class="el-icon-plus"></i>
               </div>
             </div>
           </li>
@@ -33,28 +33,28 @@ export default {
 </script>
 
 <style scoped>
-.friendList-wrapper {
+.requestList-wrapper {
   padding: 0.3rem;
 }
 
-.friendList-body {
+.requestList-body {
   background-color: #fff;
   height: 12rem;
 }
 
-.friend-info {
+.request-info {
   display: flex;
   align-items: center;
   width: 80%;
   overflow: hidden;
 }
 
-.friend-info .info-avatar {
+.request-info .info-avatar {
   margin-top: 0.5rem;
   margin-left: 0.2rem;
 }
 
-.friend-info .info-name-saying {
+.request-info .info-name-saying {
   text-align: left;
   margin-left: 1rem;
 }
@@ -82,6 +82,7 @@ h2 {
   background-color: rgb(244, 245, 245);
   padding: 1rem;
   padding-left: 0;
+  padding-top: 4rem;
 }
 
 ul {

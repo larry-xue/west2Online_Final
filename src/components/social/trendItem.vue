@@ -2,23 +2,25 @@
   <div class="trendItem">
     <div class="trend-header">
       <div class="user-avatar">
-        <el-avatar :src="itemInfo.avatar"></el-avatar>
+        <el-avatar :src="picUrl"></el-avatar>
       </div>
       <div class="header-info">
         <div class="header-user-info">
-          <h3>{{ itemInfo.username }}</h3>
+          <div class="info-sex-name">
+            <span>{{ itemInfo.username }}</span>
+            <div class="user-sex">
+              <div class="info-sex" v-if="itemInfo.sex===0">
+                <img src="../../assets/sex_man.png" alt="男" />
+              </div>
+              <div class="info-sex" v-else-if="itemInfo.sex===1">
+                <img src="../../assets/sex_woman.png" alt="女" />
+              </div>
+              <div class="info-sex" v-else style="width:1rem;height:1rem">
+                <img src="../../assets/sex.png" alt="保密" />
+              </div>
+            </div>
+          </div>
           <div class="sendTime">{{ itemInfo.time }}</div>
-        </div>
-      </div>
-      <div class="user-sex">
-        <div class="info-sex" v-if="itemInfo.sex==='0'">
-          <img src="../../assets/sex_man.png" alt="男" />
-        </div>
-        <div class="info-sex" v-else-if="itemInfo.sex==='1'">
-          <img src="../../assets/sex_woman.png" alt="女" />
-        </div>
-        <div class="info-sex" v-else style="width:1rem;height:1rem">
-          <img src="../../assets/sex.png" alt="保密" />
         </div>
       </div>
     </div>
@@ -27,7 +29,14 @@
         <span>{{ showContent }}</span>
         <div class="showAll" v-if="showAll" @click="showAllContent">{{nowContentState}}</div>
       </div>
-      <div class="content-imgs"></div>
+      <div class="content-imgs">
+        <img
+          v-for="(item, index) in itemInfo.imgs"
+          :class="picClass"
+          :key="index"
+          :src="'http://39.97.113.252:8080/static/' + item"
+        />
+      </div>
     </div>
     <div class="trend-bottom">
       <div class="bottom-item" @click="likeThisTrend">
@@ -39,23 +48,51 @@
         {{ itemInfo.comments }}
       </div>
     </div>
-    <div class="trend-comment">
-      <div class="comment-input" v-show="showComment">
-        <el-avatar style="width: 2.4rem;height: 2.4rem"></el-avatar>
-        <el-input size="mini"></el-input>
-        <el-button type="primary" size="mini" style="background-color: rgb(3,113,223)">评论</el-button>
+    <div class="trend-comment" v-show="showComment">
+      <div class="comment-input">
+        <el-avatar style="width: 2rem;height: 2rem" :src="picUrl"></el-avatar>
+        <el-input size="mini" v-model="commentInput"></el-input>
+        <el-button
+          @click="sendComment"
+          type="primary"
+          size="mini"
+          style="background-color: rgb(3,113,223)"
+        >评论</el-button>
       </div>
-      <div class="comments"></div>
+      <div class="comments">
+        <commentItem v-for="item in comments" :key="item.gid" :itemInfo="item"></commentItem>
+      </div>
+      <el-pagination
+        layout="prev, pager, next"
+        :page-count="totalPage"
+        small
+        :hide-on-single-page="true"
+        :current-page.sync="currentPage"
+        @current-change="showNextPageComment"
+      ></el-pagination>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import commentItem from './commentItem.vue';
 
 export default {
   props: [
     'itemInfo',
   ],
+  components: {
+    commentItem,
+  },
+  computed: {
+    ...mapState({
+      userInfo: (state) => state.userInfo,
+    }),
+    picUrl() {
+      return `http://39.97.113.252:8080/static/${this.userInfo.avatar}`;
+    },
+  },
   data() {
     return {
       showAll: false,
@@ -64,32 +101,96 @@ export default {
       showContent: '',
       nowContentState: '展开',
       likeClassGroup: ['el-icon-caret-top', 'grey'],
+      picClass: [],
+      commentInput: '',
+      comments: [],
+      totalPage: 0,
+      currentPage: 1,
     };
   },
   mounted() {
-    if (this.itemInfo.content && this.itemInfo.content.length > 10) {
+    if (this.itemInfo.content && this.itemInfo.content.length > 100) {
       this.showAll = true;
-      this.showContent = this.itemInfo.content.substring(0, 11);
+      this.showContent = this.itemInfo.content.substring(0, 100);
     } else {
       this.showContent = this.itemInfo.content;
     }
 
     // 如果喜欢此动态
-    console.log(this.itemInfo.liked);
     if (this.itemInfo.liked) {
       this.likeClassGroup.pop();
       this.likeClassGroup.push('becomeBlue');
     }
+
+    // 图片格式
+    if (this.itemInfo.imgs && this.itemInfo.imgs.length > 1) {
+      // 小图模式
+      this.picClass.push('smallPic');
+    } else {
+      this.picClass.push('biggerPic');
+    }
   },
   methods: {
+    showNextPageComment() {
+      // 请求下一页
+      this.$http.get(`/v1/news/${this.itemInfo.tid}/comments`, {
+        params: {
+          page: this.currentPage,
+        },
+      }).then((res) => {
+        const { replies } = res.data.data;
+        // this.comments = replies;
+        // eslint-disable-next-line radix
+        const { length } = this.comments;
+        for (let i = 0; i < length; i += 1) {
+          this.comments.splice(i, 1, replies[i]);
+        }
+        this.totalPage = res.data.data.pages;
+        this.currentPage = res.data.data.current;
+      });
+    },
+    sendComment() {
+      // 对某条动态发布评论
+      if (this.commentInput === '') {
+        this.$notify({
+          message: '评论不能为空',
+          timeout: 1000,
+        });
+      } else {
+        // 发表评论
+        this.$http.post(`/v1/news/${this.itemInfo.tid}/comments`, {
+          tid: this.itemInfo.tid,
+          content: this.commentInput,
+        }).then((res) => {
+          const comment = {};
+          comment.ancestor = res.data.data;
+          this.comments.push(comment);
+          this.commentInput = '';
+          this.$notify({
+            message: '评论发送成功',
+            timeout: 1000,
+          });
+          this.itemInfo.comments += 1;
+        });
+      }
+    },
     showComments() {
       if (this.showComment) {
         this.showComment = false;
       } else {
         this.showComment = true;
-        if (this.newsComments.length === 0) {
-          console.log('apply');
-        }
+      }
+
+      if (this.showComment) {
+        // 请求评论
+        this.$http.get(`/v1/news/${this.itemInfo.tid}/comments`).then((res) => {
+          const { replies } = res.data.data;
+          this.comments = replies;
+          console.log(replies);
+          // eslint-disable-next-line radix
+          this.totalPage = parseInt(res.data.data.pages);
+          this.currentPage = res.data.data.current;
+        });
       }
     },
     showAllContent() {
@@ -97,7 +198,7 @@ export default {
         this.showContent = this.itemInfo.content;
         this.nowContentState = '收起';
       } else {
-        this.showContent = this.itemInfo.content.substring(0, 11);
+        this.showContent = this.itemInfo.content.substring(0, 100);
         this.nowContentState = '展开';
       }
     },
@@ -141,9 +242,10 @@ export default {
 }
 
 .trend-content {
-  width: 72%;
   margin: 0 auto;
   text-align: left;
+  width: 80%;
+  margin-left: calc(3.6rem + 10px);
 }
 
 .content-word span {
@@ -185,12 +287,46 @@ export default {
 
 .comment-input {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
   background-color: rgb(250, 251, 252);
   padding: 1rem;
 }
 
+.comment-input .el-input {
+  margin-left: 1rem;
+}
+
+.comment-input .el-button {
+  margin-left: 2rem;
+}
+
+.info-sex-name {
+  display: flex;
+}
+
+.info-sex-name .user-sex {
+  margin-left: 0.3rem;
+}
+
+.info-sex img {
+  width: 80%;
+}
+
+.smallPic {
+  width: 25%;
+}
+
+.biggerPic {
+  overflow: hidden;
+  width: 16rem;
+  height: 9rem;
+}
+
+.content-imgs {
+  display: flex;
+  flex-wrap: wrap;
+}
 /* ----------------- */
 
 .becomeBlue {
@@ -219,6 +355,6 @@ export default {
 }
 
 img {
-  width: 100%;
+  width: 50%;
 }
 </style>

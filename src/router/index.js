@@ -47,7 +47,7 @@ const routes = [
             component: () => import('../components/user/gameShow.vue'),
           },
           {
-            path: '/user/:id/activities',
+            path: '/user/activities',
             name: 'activities',
             component: () => import('../components/user/activities.vue'),
           },

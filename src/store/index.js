@@ -6,17 +6,21 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     userInfo: {
-      username: 'azoux',
+      username: '',
       sex: 1,
-      introduction: 'a nice guy',
+      introduction: '',
       pageBgc: '#afa',
-      avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+      avatar: '',
       lock: false,
       email: '1612395322@qq.com',
     },
     friendTrend: [],
     hotTrend: [],
     likeTrend: [],
+    otherUserInfo: [],
+    myTrend: [],
+    showChat: false,
+    chatButton: true,
   },
   mutations: {
     updateUserInfo(state, payload) {
@@ -27,6 +31,21 @@ export default new Vuex.Store({
         state.likeTrend.push(...payload);
       } else {
         state.likeTrend.unshift(payload);
+      }
+    },
+    changeOtherUserInfo(state, payload) {
+      state.otherUserInfo.push(payload);
+    },
+    updateMyTrend(state, payload) {
+      state.myTrend.push(...payload);
+    },
+    changeChatButton(state, payload) {
+      if (payload.type === 'open') {
+        state.chatButton = false;
+        state.showChat = true;
+      } else {
+        state.chatButton = true;
+        state.showChat = false;
       }
     },
   },

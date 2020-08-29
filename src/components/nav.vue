@@ -28,7 +28,7 @@
         >Contact</el-link>
       </div>
       <div class="item item-myself" @click="jump('user')">
-        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+        <el-avatar :src="picUrl"></el-avatar>
       </div>
     </div>
   </div>
@@ -39,7 +39,6 @@ import { mapState } from 'vuex';
 
 export default {
   mounted() {
-    console.log(this.nowNavVisit);
   },
   methods: {
     jump(cmp, index) {
@@ -53,7 +52,11 @@ export default {
   computed: {
     ...mapState({
       nowNavVisit: (state) => state.nowNavVisit,
+      userInfo: (state) => state.userInfo,
     }),
+    picUrl() {
+      return `http://39.97.113.252:8080/static/${this.userInfo.avatar}`;
+    },
   },
   data() {
     return {

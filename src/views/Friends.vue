@@ -1,18 +1,26 @@
 <template>
   <div class="friends">
-    <div class="friendList">
+    <div class="Lists">
       <friendList :itemInfo="myFriendList"></friendList>
+      <requestList :itemInfo="myFriendList"></requestList>
     </div>
-    <div class="friendTrend">12</div>
+    <div class="friendTrend">
+      <friendTrend :uid="6"></friendTrend>
+    </div>
+    <el-backtop></el-backtop>
   </div>
 </template>
 
 <script>
 import friendList from '../components/friends/friendList.vue';
+import requestList from '../components/friends/requestList.vue';
+import friendTrend from '../components/friends/friendTrend.vue';
 
 export default {
   components: {
     friendList,
+    requestList,
+    friendTrend,
   },
   data() {
     return {
@@ -69,12 +77,12 @@ export default {
   justify-content: space-around;
 }
 
-.friends .friendList {
+.friends .Lists {
   width: 20%;
 }
 
 .friends .friendTrend {
-  width: 60%;
-  background-color: blue;
+  width: 95%;
+  margin-left: 2%;
 }
 </style>

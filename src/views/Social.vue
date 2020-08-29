@@ -60,13 +60,7 @@ export default {
         const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
         // 滚动条到底部的条件
         if (Math.ceil(scrollTop) + windowHeight === scrollHeight) {
-          // 写后台加载数据的函数
-          // 请求新数据
           storeThis.getNews();
-          const d = new Date().getTime() + 1000;
-          // eslint-disable-next-line no-empty
-          for (; d > new Date().getTime();) { }
-          document.scrollHeight = Math.ceil(scrollTop) + windowHeight;
         }
       };
     });
@@ -87,10 +81,16 @@ export default {
       friendPage: 1,
       friendFull: false,
       loading: true,
+      onloading: false, // 防止重复请求
     };
   },
   methods: {
+    // eslint-disable-next-line consistent-return
     getNews(type = 0) {
+      if (this.onloading) {
+        return false;
+      }
+      this.onloading = true;
       if (!type) {
         // 推荐动态
         if (!this.likeFull) {
@@ -105,6 +105,9 @@ export default {
             }
             this.likePage = resData.current + 1;
             this.$store.commit('addLikeTrend', resData.news, 1);
+            setTimeout(() => {
+              this.onloading = false;
+            }, 200);
           });
         } else {
           this.$notify({
@@ -125,7 +128,7 @@ export default {
 
 <style scoped>
 .social {
-  width: 70%;
+  width: 90%;
   margin: 0 auto;
   margin-top: 7rem;
   height: 500px;
@@ -134,16 +137,14 @@ export default {
 .social-tabs {
   width: 6rem;
   position: fixed;
-  margin-left: 10%;
 }
 
 .social-body {
-  width: 33rem;
-  margin-left: 29%;
+  width: 80%;
+  margin-left: 15%;
 }
 
 .show-trend {
-  width: 33rem;
   margin-top: 1rem;
 }
 

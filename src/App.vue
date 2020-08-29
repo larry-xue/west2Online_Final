@@ -1,15 +1,43 @@
 <template>
   <div id="app">
     <router-view />
+    <div class="chat-cmp">
+      <div v-show="chatButton" class="chatButton cursor" @click="openChat">
+        <i class="el-icon-chat-line-square"></i>
+      </div>
+      <div class="chat-body">
+        <chat v-show="showChat"></chat>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import chat from './components/chat.vue';
 
 export default {
+  components: {
+    chat,
+  },
   mounted() {
     // const body = document.getElementById('app');
     // body.style.width = `calc(100vw - ${this.getScrollWidth()}px)`;
+    const tHis = this;
+    document.addEventListener('click', (e) => {
+      // 下面这句代码是获取 点击的区域是否包含你的菜单，如果包含，说明点击的是菜单以外，不包含则为菜单以内
+      const flag = e.target.contains(document.getElementsByClassName('el-drawer')[0]);
+      if (!flag) return;
+      tHis.$store.commit('changeChatButton', {
+        type: 'close',
+      });
+    });
+  },
+  computed: {
+    ...mapState({
+      showChat: (state) => state.showChat,
+      chatButton: (state) => state.chatButton,
+    }),
   },
   methods: {
     getScrollWidth() {
@@ -23,8 +51,11 @@ export default {
       document.body.removeChild(oDiv);
       return noScroll - scroll;
     },
-  },
-  components: {
+    openChat() {
+      this.$store.commit('changeChatButton', {
+        type: 'open',
+      });
+    },
   },
 };
 </script>
@@ -82,5 +113,22 @@ input::-moz-placeholder {
 input:-ms-input-placeholder {
   /* Internet Explorer 10+  适配ie*/
   color: #bdcada;
+}
+
+.chatButton {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 99999;
+  color: #ccc;
+  transition: all 0.3s ease-in-out;
+}
+
+.chatButton > i {
+  font-size: 3rem;
+}
+
+.chatButton:hover {
+  color: #fff;
 }
 </style>
