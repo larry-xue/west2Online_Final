@@ -2,7 +2,12 @@
   <div class="trendItem">
     <div class="trend-header">
       <div class="user-avatar">
-        <el-avatar :src="picUrl"></el-avatar>
+        <el-popover placement="top-start" trigger="hover">
+          <el-avatar :src="picUrl" slot="reference"></el-avatar>
+          <div class="addFriend" style="display:flex; justify-content:center">
+            <el-button @click="openAddNweFriend" type="primary">添加好友</el-button>
+          </div>
+        </el-popover>
       </div>
       <div class="header-info">
         <div class="header-user-info">
@@ -71,6 +76,12 @@
         @current-change="showNextPageComment"
       ></el-pagination>
     </div>
+    <el-dialog title="添加好友" :visible.sync="showAddFriend">
+      <div style="display:flex;justify-content:space-between">
+        <el-input v-model="checkInfo"></el-input>
+        <el-button type="primary" @click="sendAddFriend">发送好友请求</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -106,6 +117,8 @@ export default {
       comments: [],
       totalPage: 0,
       currentPage: 1,
+      showAddFriend: false,
+      checkInfo: '',
     };
   },
   mounted() {
@@ -131,6 +144,25 @@ export default {
     }
   },
   methods: {
+    openAddNweFriend() {
+      // 打开添加好友对话框
+      this.showAddFriend = true;
+    },
+    sendAddFriend() {
+      // 发送添加好友请求
+      console.log(this.itemInfo);
+      this.$http.post(`/v1/friends/${this.itemInfo.uid}`, {
+        message: this.checkInfo,
+      }).then((res) => {
+        if (res.data.message === 'success') {
+          this.$notify({
+            message: '好友请求发送成功辣~~',
+            timeout: 1500,
+          });
+          this.showAddFriend = false;
+        }
+      });
+    },
     showNextPageComment() {
       // 请求下一页
       this.$http.get(`/v1/news/${this.itemInfo.tid}/comments`, {

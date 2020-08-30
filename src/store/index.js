@@ -21,6 +21,7 @@ export default new Vuex.Store({
     myTrend: [],
     showChat: false,
     chatButton: true,
+    messages: {}, // message 里面键为uid，键值为聊天内容数组
   },
   mutations: {
     updateUserInfo(state, payload) {
@@ -46,6 +47,13 @@ export default new Vuex.Store({
       } else {
         state.chatButton = true;
         state.showChat = false;
+      }
+    },
+    messageOperate(state, payload) {
+      if (state[payload.uid].length === 0) {
+        state[payload.uid] = payload.messages;
+      } else {
+        state[payload.uid].push(payload.message);
       }
     },
   },

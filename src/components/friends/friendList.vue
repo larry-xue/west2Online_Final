@@ -4,22 +4,23 @@
       <h2>好友列表</h2>
       <vue-scroll slot="refresh-start" ref="body">
         <ul>
-          <li v-for="item in itemInfo" :key="item.key" class="cursor">
+          <li v-for="item in myFriendList" :key="item.key" class="cursor">
             <div class="friend-info">
               <div class="info-avatar">
                 <el-avatar :src="item.avatar"></el-avatar>
               </div>
               <div class="info-name-saying">
                 <h3>{{ item.name }}</h3>
-                <div>{{item.saying}}</div>
+                <div>{{ item.saying }}</div>
               </div>
             </div>
             <div class="options">
-              <div class="option-item">
+              <div class="option-item" @click="chatWhithThisGuy(item)">
                 <i class="el-icon-chat-line-round"></i>
               </div>
             </div>
           </li>
+          <li v-if="myFriendList.length===0">你还没有好友喔，快去添加吧~~</li>
         </ul>
       </vue-scroll>
     </div>
@@ -28,7 +29,30 @@
 
 <script>
 export default {
-  props: ['itemInfo'],
+  mounted() {
+    this.getFriendList();
+  },
+  methods: {
+    chatWhithThisGuy(item) {
+      this.$emit('chatWithAGuy', item);
+    },
+    getFriendList(pages = 1) {
+      // getFriendList
+      this.$http.get('/v1/friends', {
+        params: {
+          pages,
+        },
+      }).then((res) => {
+        console.log(res);
+        this.myFriendList = this.res.data.data.friends;
+      });
+    },
+  },
+  data() {
+    return {
+      myFriendList: [],
+    };
+  },
 };
 </script>
 
@@ -39,7 +63,6 @@ export default {
 
 .friendList-body {
   background-color: #fff;
-  height: 12rem;
 }
 
 .friend-info {

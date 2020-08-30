@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import CHAT from '../chat/index';
 import navBar from '../components/nav.vue';
 
 export default {
@@ -18,8 +19,14 @@ export default {
   },
   mounted() {
     this.$http.get('/v1/user').then((res) => {
+      // CHAT.init();
       this.$store.commit('updateUserInfo', res.data.data);
     });
+  },
+  data() {
+    return {
+      CHAT,
+    };
   },
 };
 </script>

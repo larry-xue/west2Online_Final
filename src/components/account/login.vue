@@ -86,9 +86,8 @@ export default {
             password: md5(this.login.password),
           }).then((res) => {
             if (res.data.message === 'success') {
-              this.$message({
+              this.$notify({
                 message: '登录成功！',
-                type: 'success',
               });
               const tokens = res.data.data;
               if (this.keepAlive) {
