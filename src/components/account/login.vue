@@ -85,6 +85,7 @@ export default {
             email: this.login.email,
             password: md5(this.login.password),
           }).then((res) => {
+            console.log(res);
             if (res.data.message === 'success') {
               this.$notify({
                 message: '登录成功！',
@@ -101,6 +102,7 @@ export default {
               });
             }
           }).catch((err) => {
+            console.log(err.response);
             this.$message({
               message: err,
               type: 'warning',

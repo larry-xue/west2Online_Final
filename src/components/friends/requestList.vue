@@ -6,7 +6,7 @@
       <vue-scroll slot="refresh-start" ref="body">
         <ul>
           <li v-for="item in undealRequest" :key="item.uid" class="cursor">
-            <div class="request-info" @click="() => {this.$emit('lookThisGuyTrend', item.uid)}">
+            <div class="request-info" @click="watchThisGuy(item)">
               <div class="info-avatar">
                 <el-avatar :src="'http://39.97.113.252:8080/static/' + item.avatar"></el-avatar>
               </div>
@@ -32,7 +32,7 @@
         <vue-scroll slot="refresh-start" ref="body">
           <ul>
             <li v-for="item in handledRequest" :key="item.uid" class="cursor">
-              <div class="request-info">
+              <div class="request-info" @click="watchThisGuy(item)">
                 <div class="info-avatar">
                   <el-avatar :src="'http://39.97.113.252:8080/static/' + item.avatar"></el-avatar>
                 </div>
@@ -61,6 +61,9 @@ export default {
     this.getUndeadedList();
   },
   methods: {
+    watchThisGuy(item) {
+      this.$emit('lookThisGuy', item.from);
+    },
     addThisGuy(item, agree) {
       console.log(item);
       this.$http.post(`/v1/friends/agree/${item.mid}`, {
@@ -76,7 +79,6 @@ export default {
           pages,
         },
       }).then((res) => {
-        console.log(res);
         this.undealRequest = res.data.data.reply;
       });
     },
@@ -87,7 +89,6 @@ export default {
           pages,
         },
       }).then((res) => {
-        console.log(res);
         this.handledRequest = res.data.data.reply;
       });
     },

@@ -11,9 +11,13 @@ module.exports = {
         target: 'http://39.97.113.252:8080',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '/api'
-        }
-      }
+          '^/api': '/api',
+        },
+      },
     },
-  }
-}
+  },
+  css: {
+    extract: false,
+  },
+  publicPath: './',
+};

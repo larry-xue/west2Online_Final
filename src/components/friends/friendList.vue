@@ -7,10 +7,10 @@
           <li v-for="item in myFriendList" :key="item.key" class="cursor">
             <div class="friend-info">
               <div class="info-avatar">
-                <el-avatar :src="item.avatar"></el-avatar>
+                <el-avatar :src="'http://39.97.113.252:8080/static/' + item.avatar"></el-avatar>
               </div>
               <div class="info-name-saying">
-                <h3>{{ item.name }}</h3>
+                <h3>{{ item.username }}</h3>
                 <div>{{ item.saying }}</div>
               </div>
             </div>
@@ -35,6 +35,7 @@ export default {
   methods: {
     chatWhithThisGuy(item) {
       this.$emit('chatWithAGuy', item);
+      this.$store.commit('updateNowChatUID', item.uid);
     },
     getFriendList(pages = 1) {
       // getFriendList
@@ -44,7 +45,14 @@ export default {
         },
       }).then((res) => {
         console.log(res);
-        this.myFriendList = this.res.data.data.friends;
+        const { friends } = res.data.data;
+        for (let i = 0; i < friends.length; i += 1) {
+          // 请求好友信息
+          this.$http.get(`/v1/user/uid/${friends[i]}`).then((res2) => {
+            console.log(res2);
+            this.myFriendList.push(res2.data.data);
+          });
+        }
       });
     },
   },

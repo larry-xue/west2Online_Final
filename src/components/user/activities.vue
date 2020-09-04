@@ -23,7 +23,7 @@ export default {
   },
   mounted() {
     // myTrend
-    this.$http.get('/v1/news/page/1').then((res) => {
+    this.$http.get(`v1/user/${this.userInfo.uid}/news/page/1`).then((res) => {
       if (res.data.data.current === res.data.data.pages) {
         this.trendFull = true;
       }
@@ -71,7 +71,7 @@ export default {
       // 正在请求，避免重复请求
       this.onloading = true;
       if (!this.trendFull) {
-        this.$http.get(`/v1/news/page/${(this.myTrend.length / 5 + 1)}`, {
+        this.$http.get(`/v1/user/${this.userInfo.uid}/news/page/${(this.myTrend.length / 5 + 1)}`, {
         }).then((res) => {
           const resData = res.data.data;
           console.log(resData);

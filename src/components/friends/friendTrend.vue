@@ -43,23 +43,7 @@ export default {
   computed: {
   },
   mounted() {
-    // 接受一个参数uid，请求信息，并且请求他的动态
-    this.$http.get(`/v1/user/uid/${this.uid}`).then((res) => {
-      this.friendInfo = res.data.data;
-      this.picUrl = `http://39.97.113.252:8080/static/${this.friendInfo.avatar}`;
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    this.$http.get(`/v1/user/${this.uid}/news/page/${this.page}`).then((res) => {
-      const resData = res.data.data;
-      this.page = resData.current + 1;
-      this.friendTrend = resData.news;
-      if (res.data.data.current === res.data.data.pages) {
-        this.trendFull = true;
-      }
-    });
-
+    this.initTrend();
     // scroll
     const storeThis = this;
     this.$nextTick(() => {
@@ -94,6 +78,31 @@ export default {
     };
   },
   methods: {
+    initTrend() {
+      // 接受一个参数uid，请求信息，并且请求他的动态
+      this.$http.get(`/v1/user/uid/${this.uid}`).then((res) => {
+        this.friendInfo = res.data.data;
+        this.picUrl = `http://39.97.113.252:8080/static/${this.friendInfo.avatar}`;
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      this.$http.get(`/v1/user/${this.uid}/news/page/${this.page}`).then((res) => {
+        const resData = res.data.data;
+        this.page = resData.current + 1;
+        this.friendTrend = resData.news;
+        if (res.data.data.current === res.data.data.pages) {
+          this.trendFull = true;
+        }
+      });
+    },
+    refreshData(uid) {
+      // 根据新的uid刷新信息
+      if (uid !== this.uid) {
+        this.uid = uid;
+        this.initTrend();
+      }
+    },
     // eslint-disable-next-line consistent-return
     getNews() {
       // 推荐动态

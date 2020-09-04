@@ -83,7 +83,12 @@ export default {
     },
     releaseNews() {
       // 发布动态
-      const content = document.getElementsByClassName('input-editor')[0].innerHTML;
+      let content = document.getElementsByClassName('input-editor')[0].innerHTML;
+      // 文本替换
+      content = content.replace(/<div>/g, '');
+      content = content.replace(/<\/div>/g, '\r\n');
+      content = content.replace(/&nbsp;/g, ' ');
+      content = content.replace(/<br>/g, '\r\n');
       if (content === '' && this.uploadImgs.length === 0) {
         this.$notify({
           message: '发布内容不能为空！',

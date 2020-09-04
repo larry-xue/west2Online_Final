@@ -52,6 +52,9 @@
         <br />through face-to-face games
       </p>
     </div>
+    <div class="chat-together">
+      <el-button type="primary">meet your sea</el-button>
+    </div>
   </div>
 </template>
 
@@ -302,6 +305,10 @@ export default {
   color: white;
   font-size: 1.5rem;
   padding-top: 2rem;
+}
+
+.chat-together {
+  z-index: 999;
 }
 
 .seaWave {

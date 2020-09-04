@@ -19,13 +19,21 @@
       <div class="chat-body-wrapper" v-show="showHeader">
         <el-page-header style="padding: 0.5rem" @back="goBack" :content="chatWithWho"></el-page-header>
         <div class="chat-body">
-          <div class="chat-body-content">
-            <!-- 聊天内容 -->
-          </div>
+          <vue-scroll slot="refresh-start" ref="body2" @handle-resize="handleResize" :ops="ops">
+            <div class="chat-body-content">
+              <!-- 聊天内容 -->
+              <messageItem v-for="item in messages" :key="item.mid" :itemInfo="item"></messageItem>
+            </div>
+          </vue-scroll>
           <div class="chat-body-input">
-            <!-- 输入框 -->
+            <!-- 输入框ww -->
             <div class="send-input" :class="sendClasses">
-              <div contenteditable="true" class="input-editor" placeholder="告诉你个小秘密~~"></div>
+              <div
+                contenteditable="true"
+                id="messageInput"
+                class="input-editor"
+                placeholder="告诉你个小秘密~~"
+              ></div>
               <div class="input-bottom">
                 <!-- 图片预览 -->
                 <div class="img-item-wrapper" v-for="(item, index) in imgs" :key="index">
@@ -65,55 +73,95 @@
 import { mapState } from 'vuex';
 import friendList from './friends/friendList.vue';
 import emojiPicker from './emojiPick.vue';
+import messageItem from './social/messageItem.vue';
 import CHAT from '../chat/index';
 
 export default {
   computed: {
     ...mapState({
       showChat: (state) => state.showChat,
+      messages: (state) => state.nowChatMessages,
     }),
   },
   components: {
     emojiPicker,
     friendList,
+    messageItem,
+  },
+  watch: {
+    messages() {
+      console.log('ioas');
+      this.$refs.body2.scrollTo(
+        {
+          y: '100%',
+        },
+        700,
+      );
+    },
   },
   data() {
     return {
       chatWithWho: 'azoux',
-      showHeader: true,
+      showHeader: false,
       sendClasses: ['input-content'],
       imgs: [],
       uploadImgs: [],
       haveImg: false,
       CHAT,
+      otherInfo: {},
+      ops: {
+        vuescroll: {
+          mode: 'slide',
+          sizeStrategy: 'percent',
+          detectResize: true,
+          scroller: {
+            minZoom: 1,
+            maxZoom: 1,
+          },
+        },
+      },
     };
   },
   methods: {
+    handleResize(a, b, c) {
+      // 有新消息就滑动到底部
+      console.log(a, b, c);
+    },
     sendMessage() {
-      const message = document.getElementsByClassName('input-editor')[1].innerHTML;
+      let message = document.getElementById('messageInput').innerHTML;
+      message = message.replace(/<div>/g, '');
+      message = message.replace(/<\/div>/g, '\r\n');
+      message = message.replace(/&nbsp;/g, ' ');
+      message = message.replace(/<br>/g, '\r\n');
+      console.log(message);
       // 发送信息
+      console.log(this.imgs);
       if (this.haveImg) {
         // 有图片，再判断是否有content
         if (message !== '') {
           // 分成 两条发送
-          CHAT.sendMessage(message, false);
-          CHAT.sendMessage(this.imgs[0], true);
+          CHAT.sendMessage(message, false, this.otherInfo.uid);
+          CHAT.sendMessage(this.uploadImgs[0], true, this.otherInfo.uid);
         } else {
           // 只有图片
-          CHAT.sendMessage(this.imgs[0], true);
+          CHAT.sendMessage(this.uploadImgs[0], true, this.otherInfo.uid);
         }
       } else {
         // 只有content
-        CHAT.sendMessage(message, false);
+        CHAT.sendMessage(message, false, this.otherInfo.uid);
       }
+      document.getElementById('messageInput').innerHTML = '';
+      this.uploadImgs = [];
+      this.imgs = [];
+      this.haveImg = false;
     },
     goBack() {
       this.showHeader = false;
     },
     chatWhithSomeone(item) {
       this.showHeader = true;
-      this.chatWithWho = item.name;
-      console.log(item);
+      this.otherInfo = item;
+      this.chatWithWho = item.username;
     },
     uploadImg(e) {
       const file = e.target.files[0];
@@ -131,12 +179,13 @@ export default {
           // that.$refs['imgimg'].setAttribute('src','data:image/png;base64,'+url);
         };
         // 保存信息
-        this.uploadImgs.push(res.data.data.files[0].fid);
+        console.log(res.data.data);
+        this.uploadImgs.push(res.data.data.files[0].path);
         this.haveImg = true;
       });
     },
     addEmojiContent(item) {
-      document.getElementsByClassName('input-editor')[1].innerHTML += item;
+      document.getElementById('messageInput').innerHTML += item;
     },
     selectImg() {
       // 上传图片到服务器，返回url
@@ -171,6 +220,10 @@ export default {
 
 .chat-list {
   height: 90vh;
+}
+
+.chat-body {
+  height: 66vh;
 }
 
 .chat-body-input {

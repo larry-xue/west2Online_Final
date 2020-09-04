@@ -22,6 +22,8 @@ export default new Vuex.Store({
     showChat: false,
     chatButton: true,
     messages: {}, // message 里面键为uid，键值为聊天内容数组
+    nowChatMessages: [], // 当前的聊天数组
+    nowChatUID: 0,
   },
   mutations: {
     updateUserInfo(state, payload) {
@@ -50,11 +52,31 @@ export default new Vuex.Store({
       }
     },
     messageOperate(state, payload) {
-      if (state[payload.uid].length === 0) {
-        state[payload.uid] = payload.messages;
+      if (state.messages[payload.to] === undefined) {
+        state.messages[payload.to] = [];
+        state.messages[payload.to].push(payload);
       } else {
-        state[payload.uid].push(payload.message);
+        state.messages[payload.to].push(payload);
       }
+    },
+    nowMessageOPT(state, payload) {
+      if (payload.change) {
+        // 更换聊天对象
+        this.nowChatMessages = [];
+        if (state.messages[payload.uid] !== undefined) {
+          this.nowChatMessages = state.messages[payload.uid];
+        }
+      } else {
+        // 没有更换，有新消息
+        // eslint-disable-next-line no-lonely-if
+        if (state.nowChatMessages) {
+          state.nowChatMessages.push(payload.message);
+        }
+      }
+      console.log(state.nowChatMessages);
+    },
+    updateNowChatUID(state, payload) {
+      state.nowChatUID = payload;
     },
   },
   actions: {

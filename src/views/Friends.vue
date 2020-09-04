@@ -4,7 +4,7 @@
       <requestList @lookThisGuy="lookThisGuyTrend"></requestList>
     </div>
     <div class="friendTrend">
-      <friendTrend :uid="6"></friendTrend>
+      <friendTrend ref="friendTrend" :uid="uid"></friendTrend>
     </div>
     <el-backtop></el-backtop>
   </div>
@@ -21,12 +21,12 @@ export default {
   },
   data() {
     return {
-
+      uid: 6,
     };
   },
   methods: {
     lookThisGuyTrend(uid) {
-      console.log(uid);
+      this.$refs.friendTrend.refreshData(uid);
     },
   },
 };

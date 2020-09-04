@@ -17,7 +17,7 @@ axios.defaults.baseURL = 'http://39.97.113.252:8080/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.get['Content-Type'] = 'form-data';
 axios.defaults.headers.common['Content-Type'] = 'multipart/form-data';
-axios.defaults.withCredentials = false;
+axios.defaults.withCredentials = true;
 
 // 请求拦截器;
 axios.interceptors.request.use((config) => {
@@ -34,6 +34,15 @@ axios.interceptors.request.use((config) => {
 }, (err) => {
   console.log(err);
 });
+
+axios.interceptors.response.use((res) => res, (
+  (err) => {
+    console.log('err', err.response); // 修改后
+    if (err.response.status === 401) {
+      router.push('account');
+    }
+  }
+));
 
 Vue.use(vuescroll, {
   ops: {

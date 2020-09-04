@@ -1,5 +1,5 @@
 <template>
-  <div class="trendItem">
+  <div class="trendItem" v-show="!isDelete">
     <div class="trend-header">
       <div class="user-avatar">
         <el-popover placement="top-start" trigger="hover">
@@ -15,18 +15,30 @@
             <span>{{ itemInfo.username }}</span>
             <div class="user-sex">
               <div class="info-sex" v-if="itemInfo.sex===0">
-                <img src="../../assets/sex_man.png" alt="男" />
+                <img class="sex-img" src="../../assets/sex_man.png" alt="男" />
               </div>
               <div class="info-sex" v-else-if="itemInfo.sex===1">
-                <img src="../../assets/sex_woman.png" alt="女" />
+                <img class="sex-img" src="../../assets/sex_woman.png" alt="女" />
               </div>
               <div class="info-sex" v-else style="width:1rem;height:1rem">
-                <img src="../../assets/sex.png" alt="保密" />
+                <img class="sex-img" src="../../assets/sex.png" alt="保密" />
               </div>
             </div>
           </div>
           <div class="sendTime">{{ itemInfo.time }}</div>
         </div>
+      </div>
+      <div class="delThisTrend cursor" v-if="itemInfo.uid === userInfo.uid">
+        <el-popconfirm
+          confirmButtonText="好的"
+          cancelButtonText="不用了"
+          icon="el-icon-info"
+          iconColor="red"
+          @onConfirm="delMyTrend"
+          title="确定删除这条动态？"
+        >
+          <i class="el-icon-delete" slot="reference"></i>
+        </el-popconfirm>
       </div>
     </div>
     <div class="trend-content">
@@ -35,12 +47,7 @@
         <div class="showAll" v-if="showAll" @click="showAllContent">{{nowContentState}}</div>
       </div>
       <div class="content-imgs">
-        <img
-          v-for="(item, index) in itemInfo.imgs"
-          :class="picClass"
-          :key="index"
-          :src="'http://39.97.113.252:8080/static/' + item"
-        />
+        <img v-for="(item, index) in itemInfo.imgs" :class="picClass" :key="index" :src="item" />
       </div>
     </div>
     <div class="trend-bottom">
@@ -119,6 +126,7 @@ export default {
       currentPage: 1,
       showAddFriend: false,
       checkInfo: '',
+      isDelete: false,
     };
   },
   mounted() {
@@ -144,6 +152,20 @@ export default {
     }
   },
   methods: {
+    delMyTrend() {
+      // 删除自己的动态
+      console.log(this.itemInfo);
+      this.$http.delete(`/v1/news/${this.itemInfo.uid}`).then((res) => {
+        console.log(res);
+        this.isDelete = true;
+        this.$notify({
+          message: '删除成功~~',
+          timeout: 1000,
+        });
+      }).catch((err) => {
+        console.log(err);
+      });
+    },
     openAddNweFriend() {
       // 打开添加好友对话框
       this.showAddFriend = true;
@@ -261,6 +283,7 @@ export default {
 
 .trend-header {
   display: flex;
+  position: relative;
 }
 
 .header-user-info {
@@ -359,6 +382,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
 }
+
+.delThisTrend {
+  position: absolute;
+  right: 0;
+}
 /* ----------------- */
 
 .becomeBlue {
@@ -387,6 +415,15 @@ export default {
 }
 
 img {
-  width: 50%;
+  padding: 1rem;
+
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.sex-img {
+  padding: 0;
 }
 </style>

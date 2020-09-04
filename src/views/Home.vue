@@ -19,7 +19,7 @@ export default {
   },
   mounted() {
     this.$http.get('/v1/user').then((res) => {
-      // CHAT.init();
+      CHAT.init();
       this.$store.commit('updateUserInfo', res.data.data);
     });
   },
