@@ -41,11 +41,7 @@
                   <div>{{item.saying}}</div>
                 </div>
               </div>
-              <div class="options">
-                <div class="option-item">
-                  <i class="el-icon-plus"></i>
-                </div>
-              </div>
+              <div class="options"></div>
             </li>
           </ul>
         </vue-scroll>
@@ -68,8 +64,22 @@ export default {
       console.log(item);
       this.$http.post(`/v1/friends/agree/${item.mid}`, {
         agree,
-      }).then((res) => {
-        console.log(res);
+      }).then(() => {
+        let content;
+        if (agree) {
+          content = '同意';
+        } else {
+          content = '拒绝';
+        }
+        this.$notify({
+          message: `已经${content}他的好友申请辣`,
+          timeout: 1500,
+        });
+        for (let i = 0; i < this.undealRequest; i += 1) {
+          if (this.undealRequest[i].uid === item.uid) {
+            this.undealRequest.splice(i, 1);
+          }
+        }
       });
     },
     getRequestList(pages = 1) {

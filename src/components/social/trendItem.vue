@@ -172,7 +172,6 @@ export default {
     },
     sendAddFriend() {
       // 发送添加好友请求
-      console.log(this.itemInfo);
       this.$http.post(`/v1/friends/${this.itemInfo.uid}`, {
         message: this.checkInfo,
       }).then((res) => {

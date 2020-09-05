@@ -1,7 +1,10 @@
 // socket io init
 import io from 'socket.io-client';
+import Vue from 'vue';
 import store from '../store/index';
 import Storage from '../storage/storage';
+
+const v = new Vue();
 
 const CHAT = {
   socket: null,
@@ -33,14 +36,16 @@ const CHAT = {
           }
         } else if (resData.messages[i].type === 'apply') {
           // 好友申请
-          this.$notify({
-            message: '有人添加你为好友嗷~~快去看看吧',
-            position: 'left',
-            timeout: 1500,
-          });
+          if (resData.messages[i].from !== store.state.userInfo.uid) {
+            v.$notify({
+              message: '有人添加你为好友嗷~~快去看看吧',
+              position: 'left',
+              timeout: 1500,
+            });
+          }
         } else if (resData.messages[i].type === 'notice') {
           // 系统通知，可能是已被移除好友
-          this.$notify({
+          v.$notify({
             message: resData.messages[i].content,
             position: 'left',
             timeout: 1500,

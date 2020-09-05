@@ -109,7 +109,12 @@ export default {
     },
     addMembers(res) {
       // 增加该组成员
-      this.itemInfo.members.push(res);
+      if (this.members_1.length < 2) {
+        this.members_1.push(res);
+      } else {
+        this.members_2.push(res);
+      }
+      console.log(res);
     },
     likeThisComment() {
       this.$http.put(`/v1/like/comments/${this.itemInfo.ancestor.cid}`).then((res) => {
@@ -131,7 +136,12 @@ export default {
           content: this.replyCommentInput,
           cid: this.itemInfo.ancestor.cid,
         }).then((res) => {
-          console.log(res);
+          if (this.members_1.length < 2) {
+            this.members_1.push(res.data.data);
+          } else {
+            this.members_2.push(res.data.data);
+          }
+          this.replyCommentInput = '';
         });
       } else {
         this.$notify({
